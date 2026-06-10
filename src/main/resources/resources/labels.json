@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "label1",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 2,
+    "name": "label2",
+    "status": "DELETED"
+  },
+  {
+    "id": 3,
+    "name": "label3",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 4,
+    "name": "label4",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 5,
+    "name": "label5",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 6,
+    "name": "label7",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 7,
+    "name": "label7",
+    "status": "ACTIVE"
+  },
+  {
+    "id": 8,
+    "name": "label8",
+    "status": "DELETED"
+  }
+]

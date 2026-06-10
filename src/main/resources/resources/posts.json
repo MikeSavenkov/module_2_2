@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "title": "title1",
+    "content": "content1",
+    "labels": [
+      {
+        "id": 1,
+        "name": "label1",
+        "status": "ACTIVE"
+      },
+      {
+        "id": 2,
+        "name": "label2",
+        "status": "DELETED"
+      }
+    ],
+    "status": "ACTIVE"
+  },
+  {
+    "id": 2,
+    "title": "title2",
+    "content": "content2",
+    "labels": [
+      {
+        "id": 3,
+        "name": "label3",
+        "status": "ACTIVE"
+      },
+      {
+        "id": 4,
+        "name": "label4",
+        "status": "ACTIVE"
+      }
+    ],
+    "status": "DELETED"
+  },
+  {
+    "id": 3,
+    "title": "title3",
+    "content": "content3",
+    "labels": [
+      {
+        "id": 5,
+        "name": "label5",
+        "status": "ACTIVE"
+      },
+      {
+        "id": 6,
+        "name": "label6",
+        "status": "DELETED"
+      }
+    ],
+    "status": "ACTIVE"
+  }
+]
