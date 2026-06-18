@@ -1,39 +1,55 @@
 package com.msavenkov.crudgradleproject.repository.gson;
 
-//import com.google.gson.Gson;
-//import com.google.gson.reflect.TypeToken;
 import com.msavenkov.crudgradleproject.exception.NotFoundException;
 import com.msavenkov.crudgradleproject.model.Label;
 import com.msavenkov.crudgradleproject.model.Status;
 import com.msavenkov.crudgradleproject.repository.LabelRepository;
 
 import java.io.*;
-import java.lang.reflect.Type;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class GsonLabelRepositoryImpl implements LabelRepository {
 
-    private static final String FILE_PATH = "src/main/resources/labels.json";
-
-    //private final Gson gson = new Gson();
+    static final String DATABASE_URL = "jdbc:mysql://localhost:3306/test_db";
+    static final String USER = "root";
+    static final String PASSWORD = "123";
 
     private List<Label> loadAllLabels() {
-        try (Reader reader = new FileReader(FILE_PATH)) {
-            //Type type = new TypeToken<List<Label>>(){}.getType();
-            //List<Label> labels = gson.fromJson(reader, type);
-            return new ArrayList<>();
+        List<Label> labels;
+        try {
+            Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+            Statement statement = connection.createStatement();
+            String sql = "SELECT * FROM label";
+            ResultSet resultSet = statement.executeQuery(sql);
+            labels = new ArrayList<>();
+            while (resultSet.next()) {
+                long id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String status = resultSet.getString("status");
+                Label label = new Label(id, name, Status.valueOf(status));
+                labels.add(label);
 
-        } catch (IOException e) {
-            return Collections.EMPTY_LIST;
+                System.out.println("\n================\n");
+                System.out.println("id: " + id);
+                System.out.println("Name: " + name);
+                System.out.println("Status: " + status);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
+        return labels;
     }
 
     private void writeAllLabels(List<Label> labels) {
-        try (Writer writer = new FileWriter(FILE_PATH)) {
+        try (Writer writer = new FileWriter("FILE_PATH")) {
             //gson.toJson(labels, writer);
         } catch (IOException e) {
             e.printStackTrace();

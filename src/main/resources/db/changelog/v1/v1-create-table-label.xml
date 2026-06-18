@@ -1,0 +1,60 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="v1-1" author="Mike Savenkov">
+        <createTable tableName="label">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            ALTER TABLE label ADD CONSTRAINT chk_label_status_enum
+            CHECK (status IN ('ACTIVE', 'DELETED', 'UNDER_REVIEW'));
+        </sql>
+    </changeSet>
+
+    <changeSet id="v1-2" author="Mike Savenkov">
+        <insert tableName="label">
+            <column name="name" value="label1"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+        <insert tableName="label">
+            <column name="name" value="label2"/>
+            <column name="status" value="DELETED"/>
+        </insert>
+        <insert tableName="label">
+            <column name="name" value="label3"/>
+            <column name="status" value="UNDER_REVIEW"/>
+        </insert>
+        <insert tableName="label">
+            <column name="name" value="label4"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+        <insert tableName="label">
+            <column name="name" value="label5"/>
+            <column name="status" value="DELETED"/>
+        </insert>
+        <insert tableName="label">
+            <column name="name" value="label6"/>
+            <column name="status" value="UNDER_REVIEW"/>
+        </insert>
+        <insert tableName="label">
+            <column name="name" value="label7"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+        <insert tableName="label">
+            <column name="name" value="label8"/>
+            <column name="status" value="DELETED"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
