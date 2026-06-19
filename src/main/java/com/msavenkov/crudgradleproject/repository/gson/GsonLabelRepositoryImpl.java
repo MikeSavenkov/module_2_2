@@ -1,16 +1,12 @@
 package com.msavenkov.crudgradleproject.repository.gson;
 
-import com.msavenkov.crudgradleproject.exception.NotFoundException;
 import com.msavenkov.crudgradleproject.model.Label;
 import com.msavenkov.crudgradleproject.model.Status;
 import com.msavenkov.crudgradleproject.repository.LabelRepository;
 
-import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class GsonLabelRepositoryImpl implements LabelRepository {
 
@@ -48,18 +44,6 @@ public class GsonLabelRepositoryImpl implements LabelRepository {
         return labels;
     }
 
-    private void writeAllLabels(List<Label> labels) {
-        try (Writer writer = new FileWriter("FILE_PATH")) {
-            //gson.toJson(labels, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Long generateAutoIncrementId(List<Label> labels) {
-        return labels.stream().mapToLong(Label::getId).max().orElse(0L) + 1;
-    }
-
     @Override
     public List<Label> getAll() {
         return loadAllLabels();
@@ -67,44 +51,82 @@ public class GsonLabelRepositoryImpl implements LabelRepository {
 
     @Override
     public Label create(Label labelToCreate) {
-        List<Label> currentLabels = loadAllLabels();
-        labelToCreate.setId(generateAutoIncrementId(currentLabels));
-        labelToCreate.setStatus(Status.ACTIVE);
-        currentLabels.add(labelToCreate);
-        writeAllLabels(currentLabels);
+
+        String sql = "INSERT INTO label (name, status) VALUES (?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, labelToCreate.getName());
+            pstmt.setString(2, Status.ACTIVE.name());
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return labelToCreate;
     }
 
     @Override
     public Label update(Label labelToUpdate) {
-        List<Label> currentLabels = loadAllLabels();
-        List<Label> updatedLabels = currentLabels.stream().map(existingLabels -> {
-            if (existingLabels.getId().equals(labelToUpdate.getId())) {
-                return labelToUpdate;
-            }
-            return existingLabels;
-        }).collect(Collectors.toList());
+        String sql = "UPDATE label SET name = ?, status = ? WHERE id = ?";
 
-        writeAllLabels(updatedLabels);
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, labelToUpdate.getName());
+            pstmt.setString(2, labelToUpdate.getStatus().name());
+            pstmt.setLong(3, labelToUpdate.getId());
+
+            pstmt.executeUpdate();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return labelToUpdate;
     }
 
     @Override
     public Label getById(Long id) {
-        return loadAllLabels().stream()
-                .filter(label -> label.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Label not found with id: " + id));
+        String sql = "SELECT * FROM label WHERE id = ?";
+        Label label = null;
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                long labelId = 0;
+                if (rs.next()) {
+                    labelId = rs.getLong("id");
+                    String name = rs.getString("name");
+                    String status = rs.getString("status");
+                    label = new Label(labelId, name, Status.valueOf(status));
+
+                } else {
+                    System.out.println("Пользователь с ID " + labelId + " не найден");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return label;
     }
 
     @Override
     public void remove(Long id) {
-        List<Label> labels = getAll();
-        for (Label label : labels) {
-            if (Objects.equals(label.getId(), id)) {
-                label.setStatus(Status.DELETED);
-            }
+        String sql = "DELETE FROM label WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        writeAllLabels(labels);
     }
 }
