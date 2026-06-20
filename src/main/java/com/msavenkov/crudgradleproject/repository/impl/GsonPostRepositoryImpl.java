@@ -1,4 +1,4 @@
-package com.msavenkov.crudgradleproject.repository.gson;
+package com.msavenkov.crudgradleproject.repository.impl;
 
 //import com.google.gson.Gson;
 //import com.google.gson.reflect.TypeToken;
@@ -8,7 +8,6 @@ import com.msavenkov.crudgradleproject.model.Status;
 import com.msavenkov.crudgradleproject.repository.PostRepository;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

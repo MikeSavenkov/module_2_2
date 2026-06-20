@@ -6,9 +6,9 @@ import com.msavenkov.crudgradleproject.controller.WriterController;
 import com.msavenkov.crudgradleproject.repository.LabelRepository;
 import com.msavenkov.crudgradleproject.repository.PostRepository;
 import com.msavenkov.crudgradleproject.repository.WriterRepository;
-import com.msavenkov.crudgradleproject.repository.gson.GsonLabelRepositoryImpl;
-import com.msavenkov.crudgradleproject.repository.gson.GsonPostRepositoryImpl;
-import com.msavenkov.crudgradleproject.repository.gson.GsonWriterRepositoryImpl;
+import com.msavenkov.crudgradleproject.repository.impl.LabelRepositoryImpl;
+import com.msavenkov.crudgradleproject.repository.impl.GsonPostRepositoryImpl;
+import com.msavenkov.crudgradleproject.repository.impl.GsonWriterRepositoryImpl;
 import com.msavenkov.crudgradleproject.view.LabelView;
 import com.msavenkov.crudgradleproject.view.PostView;
 import com.msavenkov.crudgradleproject.view.WriterView;
@@ -26,7 +26,7 @@ public class ApplicationContext {
             String entity = scanner.nextLine();
             switch (entity) {
                 case "Label":
-                    LabelRepository labelRepository = new GsonLabelRepositoryImpl();
+                    LabelRepository labelRepository = new LabelRepositoryImpl();
                     LabelController labelController = new LabelController(labelRepository);
                     LabelView labelView = new LabelView(labelController);
                     labelView.run();

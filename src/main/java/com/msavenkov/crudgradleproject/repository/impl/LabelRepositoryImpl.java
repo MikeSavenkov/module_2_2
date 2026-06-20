@@ -1,5 +1,6 @@
-package com.msavenkov.crudgradleproject.repository.gson;
+package com.msavenkov.crudgradleproject.repository.impl;
 
+import com.msavenkov.crudgradleproject.config.DatabaseConfig;
 import com.msavenkov.crudgradleproject.model.Label;
 import com.msavenkov.crudgradleproject.model.Status;
 import com.msavenkov.crudgradleproject.repository.LabelRepository;
@@ -8,37 +9,32 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GsonLabelRepositoryImpl implements LabelRepository {
+public class LabelRepositoryImpl implements LabelRepository {
 
-    static final String DATABASE_URL = "jdbc:mysql://localhost:3306/test_db";
-    static final String USER = "root";
-    static final String PASSWORD = "123";
+    static final String DATABASE_URL = DatabaseConfig.getUrl();
+    static final String USER = DatabaseConfig.getUser();
+    static final String PASSWORD = DatabaseConfig.getPassword();
 
     private List<Label> loadAllLabels() {
         List<Label> labels;
-        try {
-            Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-            Statement statement = connection.createStatement();
+        try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+             Statement statement = connection.createStatement()) {
+
             String sql = "SELECT * FROM label";
-            ResultSet resultSet = statement.executeQuery(sql);
-            labels = new ArrayList<>();
-            while (resultSet.next()) {
-                long id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                String status = resultSet.getString("status");
-                Label label = new Label(id, name, Status.valueOf(status));
-                labels.add(label);
-
-                System.out.println("\n================\n");
-                System.out.println("id: " + id);
-                System.out.println("Name: " + name);
-                System.out.println("Status: " + status);
+            try (ResultSet resultSet = statement.executeQuery(sql)) {
+                labels = new ArrayList<>();
+                while (resultSet.next()) {
+                    long id = resultSet.getInt("id");
+                    String name = resultSet.getString("name");
+                    String status = resultSet.getString("status");
+                    Label label = new Label(id, name, Status.valueOf(status));
+                    labels.add(label);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-
-            resultSet.close();
-            statement.close();
-            connection.close();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return labels;
