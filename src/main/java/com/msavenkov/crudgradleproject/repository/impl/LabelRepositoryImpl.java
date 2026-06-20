@@ -1,6 +1,7 @@
 package com.msavenkov.crudgradleproject.repository.impl;
 
 import com.msavenkov.crudgradleproject.config.DatabaseConfig;
+import com.msavenkov.crudgradleproject.exception.DatabaseException;
 import com.msavenkov.crudgradleproject.model.Label;
 import com.msavenkov.crudgradleproject.model.Status;
 import com.msavenkov.crudgradleproject.repository.LabelRepository;
@@ -31,11 +32,11 @@ public class LabelRepositoryImpl implements LabelRepository {
                     labels.add(label);
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DatabaseException("Failed to load labels", e);
             }
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Failed to connect database", e);
         }
         return labels;
     }
@@ -58,7 +59,7 @@ public class LabelRepositoryImpl implements LabelRepository {
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Failed to create new label", e);
         }
         return labelToCreate;
     }
@@ -76,9 +77,8 @@ public class LabelRepositoryImpl implements LabelRepository {
 
             pstmt.executeUpdate();
 
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Failed to update label", e);
         }
         return labelToUpdate;
     }
@@ -103,10 +103,12 @@ public class LabelRepositoryImpl implements LabelRepository {
                 } else {
                     System.out.println("Пользователь с ID " + labelId + " не найден");
                 }
+            } catch (SQLException e) {
+                throw new DatabaseException("Failed get label by id = " + id, e);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Failed to connect database", e);
         }
         return label;
     }
@@ -122,7 +124,7 @@ public class LabelRepositoryImpl implements LabelRepository {
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Failed remove label by id = " + id, e);
         }
     }
 }
