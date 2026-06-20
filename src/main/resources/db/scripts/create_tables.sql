@@ -1,0 +1,24 @@
+CREATE TABLE labels (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    status VARCHAR(50)
+);
+
+CREATE TABLE posts (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    content TEXT,
+    status VARCHAR(50),
+    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE post_label (
+    post_id BIGINT NOT NULL,
+    label_id BIGINT NOT NULL,
+    PRIMARY KEY (post_id, label_id),
+    CONSTRAINT fk_post FOREIGN KEY (post_id)
+        REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_label FOREIGN KEY (label_id)
+        REFERENCES labels(id) ON DELETE CASCADE
+);

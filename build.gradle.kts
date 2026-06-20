@@ -42,7 +42,7 @@ dependencies {
 //    activities.register("main") {
 //        arguments = mapOf(
 //            "changeLogFile" to "src/main/resources/db/changelog/main-changelog.xml",
-//            "url" to "jdbc:mysql://localhost:3306/test_db",
+//            "url" to "jdbc:mysql://localhost:3306/blog_db",
 //            "username" to "root",
 //            "password" to "123"
 //        )
@@ -56,7 +56,7 @@ tasks.register<JavaExec>("updateDatabase") {
     mainClass.set("liquibase.integration.commandline.Main")
     args(
         "--changeLogFile=src/main/resources/db/changelog/main-changelog.xml",
-        "--url=jdbc:mysql://localhost:3306/test_db",
+        "--url=jdbc:mysql://localhost:3306/blog_db",
         "--username=root",
         "--password=123",
         "update"

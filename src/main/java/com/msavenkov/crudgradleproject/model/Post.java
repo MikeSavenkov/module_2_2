@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,6 +15,8 @@ public class Post {
     private Long id;
     private String title;
     private String content;
+    private LocalDateTime created;
+    private LocalDateTime updated;
     private List<Label> labels;
     private Status status;
 

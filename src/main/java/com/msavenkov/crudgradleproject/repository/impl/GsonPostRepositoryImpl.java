@@ -1,7 +1,6 @@
 package com.msavenkov.crudgradleproject.repository.impl;
 
-//import com.google.gson.Gson;
-//import com.google.gson.reflect.TypeToken;
+
 import com.msavenkov.crudgradleproject.exception.NotFoundException;
 import com.msavenkov.crudgradleproject.model.Post;
 import com.msavenkov.crudgradleproject.model.Status;

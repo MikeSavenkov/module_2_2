@@ -12,17 +12,22 @@ import java.util.List;
 
 public class LabelRepositoryImpl implements LabelRepository {
 
-    static final String DATABASE_URL = DatabaseConfig.getUrl();
-    static final String USER = DatabaseConfig.getUser();
-    static final String PASSWORD = DatabaseConfig.getPassword();
+    private static final String DATABASE_URL = DatabaseConfig.getUrl();
+    private static final String USER = DatabaseConfig.getUser();
+    private static final String PASSWORD = DatabaseConfig.getPassword();
+
+    private static final String SQL_SELECT = "SELECT * FROM labels";
+    private static final String SQL_INSERT = "INSERT INTO labels (name, status) VALUES (?, ?)";
+    private static final String SQL_UPDATE = "UPDATE labels SET name = ?, status = ? WHERE id = ?";
+    private static final String SQL_SELECT_BY_ID = "SELECT * FROM labels WHERE id = ?";
+    private static final String SQL_DELETE = "DELETE FROM labels WHERE id = ?";
 
     private List<Label> loadAllLabels() {
         List<Label> labels;
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              Statement statement = connection.createStatement()) {
 
-            String sql = "SELECT * FROM label";
-            try (ResultSet resultSet = statement.executeQuery(sql)) {
+            try (ResultSet resultSet = statement.executeQuery(SQL_SELECT)) {
                 labels = new ArrayList<>();
                 while (resultSet.next()) {
                     long id = resultSet.getInt("id");
@@ -49,10 +54,8 @@ public class LabelRepositoryImpl implements LabelRepository {
     @Override
     public Label create(Label labelToCreate) {
 
-        String sql = "INSERT INTO label (name, status) VALUES (?, ?)";
-
         try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERT)) {
 
             pstmt.setString(1, labelToCreate.getName());
             pstmt.setString(2, Status.ACTIVE.name());
@@ -66,15 +69,13 @@ public class LabelRepositoryImpl implements LabelRepository {
 
     @Override
     public Label update(Label labelToUpdate) {
-        String sql = "UPDATE label SET name = ?, status = ? WHERE id = ?";
 
         try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_UPDATE)) {
 
             pstmt.setString(1, labelToUpdate.getName());
             pstmt.setString(2, labelToUpdate.getStatus().name());
             pstmt.setLong(3, labelToUpdate.getId());
-
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -85,10 +86,9 @@ public class LabelRepositoryImpl implements LabelRepository {
 
     @Override
     public Label getById(Long id) {
-        String sql = "SELECT * FROM label WHERE id = ?";
         Label label = null;
         try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_SELECT_BY_ID)) {
 
             pstmt.setLong(1, id);
 
@@ -115,10 +115,9 @@ public class LabelRepositoryImpl implements LabelRepository {
 
     @Override
     public void remove(Long id) {
-        String sql = "DELETE FROM label WHERE id = ?";
 
         try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_DELETE)) {
 
             pstmt.setLong(1, id);
             pstmt.executeUpdate();
