@@ -7,7 +7,7 @@ import com.msavenkov.crudgradleproject.repository.LabelRepository;
 import com.msavenkov.crudgradleproject.repository.PostRepository;
 import com.msavenkov.crudgradleproject.repository.WriterRepository;
 import com.msavenkov.crudgradleproject.repository.impl.LabelRepositoryImpl;
-import com.msavenkov.crudgradleproject.repository.impl.GsonPostRepositoryImpl;
+import com.msavenkov.crudgradleproject.repository.impl.PostRepositoryImpl;
 import com.msavenkov.crudgradleproject.repository.impl.GsonWriterRepositoryImpl;
 import com.msavenkov.crudgradleproject.view.LabelView;
 import com.msavenkov.crudgradleproject.view.PostView;
@@ -33,7 +33,7 @@ public class ApplicationContext {
                     running = false;
                     break;
                 case "Post":
-                    PostRepository postRepository = new GsonPostRepositoryImpl();
+                    PostRepository postRepository = new PostRepositoryImpl();
                     PostController postController = new PostController(postRepository);
                     PostView postView = new PostView(postController);
                     postView.run();

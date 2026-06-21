@@ -4,39 +4,32 @@
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet id="2.1.create_posts" author="Mike Savenkov">
-        <createTable tableName="posts">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="title" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="content" type="varchar(100)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="created" type="date">
-                <constraints nullable="false"/>
-            </column>
-            <column name="updated" type="date">
-                <constraints nullable="true"/>
-            </column>
-            <column name="status" type="varchar(20)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+        <sql>
+            CREATE TABLE posts (
+               id BIGINT PRIMARY KEY AUTO_INCREMENT,
+               title VARCHAR(255) NOT NULL,
+               content TEXT,
+               status VARCHAR(50),
+               created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+               updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+               writer_id BIGINT NOT NULL,
+               CONSTRAINT fk_writer FOREIGN KEY (writer_id)
+                   REFERENCES writers(id) ON DELETE CASCADE
+            );
+        </sql>
     </changeSet>
 
     <changeSet id="2.2.insert_data" author="Mike Savenkov">
         <sql>
-            insert into posts (title, content, created, updated, status)
-            values ('post1', 'content1', now(), now(), 'ACTIVE'),
-                   ('post2', 'content2', now(), now(), 'DELETED'),
-                   ('post3', 'content3', now(), now(), 'UNDER_REVIEW'),
-                   ('post4', 'content4', now(), now(), 'DELETED'),
-                   ('post5', 'content5', now(), now(), 'ACTIVE'),
-                   ('post6', 'content6', now(), now(), 'UNDER_REVIEW'),
-                   ('post7', 'content7', now(), now(), 'ACTIVE'),
-                   ('post8', 'content8', now(), now(), 'DELETED');
+            insert into posts (title, content, created, updated, status, writer_id)
+            values ('post1', 'content1', now(), now(), 'ACTIVE', 1),
+                   ('post2', 'content2', now(), now(), 'DELETED', 2),
+                   ('post3', 'content3', now(), now(), 'UNDER_REVIEW', 3),
+                   ('post4', 'content4', now(), now(), 'DELETED', 3),
+                   ('post5', 'content5', now(), now(), 'ACTIVE', 5),
+                   ('post6', 'content6', now(), now(), 'UNDER_REVIEW', 6),
+                   ('post7', 'content7', now(), now(), 'ACTIVE', 7),
+                   ('post8', 'content8', now(), now(), 'DELETED', 7);
         </sql>
     </changeSet>
 

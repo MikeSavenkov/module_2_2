@@ -3,6 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="v1.1__create_table_label.xml" relativeToChangelogFile="true"/>
+    <include file="v1.1__table_labels.xml" relativeToChangelogFile="true"/>
+    <include file="v1.2__table_writers.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

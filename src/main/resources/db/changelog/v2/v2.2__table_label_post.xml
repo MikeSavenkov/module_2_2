@@ -6,8 +6,8 @@
     <changeSet id="2.1.create_post_label" author="Mike Savenkov">
         <sql>
             CREATE TABLE post_label (
-                post_id int NOT NULL,
-                label_id int NOT NULL,
+                post_id BIGINT NOT NULL,
+                label_id BIGINT NOT NULL,
                 PRIMARY KEY (post_id, label_id),
                 CONSTRAINT fk_post FOREIGN KEY (post_id)
                     REFERENCES posts(id) ON DELETE CASCADE,

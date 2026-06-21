@@ -3,9 +3,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="1.1.create_labels" author="Mike Savenkov">
+    <changeSet id="1.1.0.create_labels" author="Mike Savenkov">
         <createTable tableName="labels">
-            <column name="id" type="int" autoIncrement="true">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(50)">
@@ -17,7 +17,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="1.2.insert_data" author="Mike Savenkov">
+    <changeSet id="1.1.1.insert_data" author="Mike Savenkov">
         <insert tableName="labels">
             <column name="name" value="label1"/>
             <column name="status" value="ACTIVE"/>

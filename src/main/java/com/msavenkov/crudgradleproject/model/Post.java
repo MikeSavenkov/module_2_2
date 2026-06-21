@@ -18,6 +18,7 @@ public class Post {
     private LocalDateTime created;
     private LocalDateTime updated;
     private List<Label> labels;
+    private Writer writer;
     private Status status;
 
     public Post(String title, String content, long countLabels) {
