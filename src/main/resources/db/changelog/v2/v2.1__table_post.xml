@@ -3,15 +3,15 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="v2-1" author="Mike Savenkov">
+    <changeSet id="2.1.create_posts" author="Mike Savenkov">
         <createTable tableName="posts">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="title" type="varchar(50)">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
-            <column name="content" type="varchar(50)">
+            <column name="content" type="varchar(100)">
                 <constraints nullable="true"/>
             </column>
             <column name="created" type="date">
@@ -20,11 +20,24 @@
             <column name="updated" type="date">
                 <constraints nullable="true"/>
             </column>
-
             <column name="status" type="varchar(20)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="2.2.insert_data" author="Mike Savenkov">
+        <sql>
+            insert into posts (title, content, created, updated, status)
+            values ('post1', 'content1', now(), now(), 'ACTIVE'),
+                   ('post2', 'content2', now(), now(), 'DELETED'),
+                   ('post3', 'content3', now(), now(), 'UNDER_REVIEW'),
+                   ('post4', 'content4', now(), now(), 'DELETED'),
+                   ('post5', 'content5', now(), now(), 'ACTIVE'),
+                   ('post6', 'content6', now(), now(), 'UNDER_REVIEW'),
+                   ('post7', 'content7', now(), now(), 'ACTIVE'),
+                   ('post8', 'content8', now(), now(), 'DELETED');
+        </sql>
     </changeSet>
 
 </databaseChangeLog>

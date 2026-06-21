@@ -1,0 +1,27 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="2.1.create_post_label" author="Mike Savenkov">
+        <sql>
+            CREATE TABLE post_label (
+                post_id int NOT NULL,
+                label_id int NOT NULL,
+                PRIMARY KEY (post_id, label_id),
+                CONSTRAINT fk_post FOREIGN KEY (post_id)
+                    REFERENCES posts(id) ON DELETE CASCADE,
+                CONSTRAINT fk_label FOREIGN KEY (label_id)
+                    REFERENCES labels(id) ON DELETE CASCADE
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="2.2.insert_data" author="Mike Savenkov">
+        <sql>
+            insert into post_label (post_id, label_id)
+            values (1, 1),(1, 2),(2, 3),(3, 5),(4, 5),(5, 6),(6, 7),(7, 8);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
