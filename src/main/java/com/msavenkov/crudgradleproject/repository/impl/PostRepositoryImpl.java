@@ -7,10 +7,12 @@ import com.msavenkov.crudgradleproject.exception.NotFoundException;
 import com.msavenkov.crudgradleproject.model.Label;
 import com.msavenkov.crudgradleproject.model.Post;
 import com.msavenkov.crudgradleproject.model.Status;
+import com.msavenkov.crudgradleproject.model.Writer;
 import com.msavenkov.crudgradleproject.repository.PostRepository;
 
 import java.io.*;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,11 +25,14 @@ public class PostRepositoryImpl implements PostRepository {
     private static final String USER = DatabaseConfig.getUser();
     private static final String PASSWORD = DatabaseConfig.getPassword();
 
-    private static final String SQL_SELECT = "SELECT *";
-    private static final String SQL_INSERT = "INSERT INTO labels (name, status) VALUES (?, ?)";
-    private static final String SQL_UPDATE = "UPDATE labels SET name = ?, status = ? WHERE id = ?";
-    private static final String SQL_SELECT_BY_ID = "SELECT * FROM labels WHERE id = ?";
-    private static final String SQL_DELETE = "DELETE FROM labels WHERE id = ?";
+    private static final String SQL_SELECT = "SELECT * FROM posts";
+    private static final String SQL_INSERT =
+            "INSERT INTO posts (title, content, status, created, updated, writer_id) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String SQL_UPDATE =
+            "UPDATE posts SET title = ?, content = ?, status = ?, writer_id = ? WHERE id = ?";
+    private static final String SQL_SELECT_BY_ID = "SELECT * FROM posts WHERE id = ?";
+    //todo поменять на update, т.к. мы меняем статус а не удаляем запись
+    private static final String SQL_DELETE = "DELETE FROM posts WHERE id = ?";
 
     private List<Post> loadAllPosts() {
         List<Post> posts;
@@ -38,10 +43,15 @@ public class PostRepositoryImpl implements PostRepository {
                 posts = new ArrayList<>();
                 while (resultSet.next()) {
                     long id = resultSet.getInt("id");
-                    String name = resultSet.getString("name");
+                    String title = resultSet.getString("title");
+                    String content = resultSet.getString("content");
                     String status = resultSet.getString("status");
-                    //Post post = new Post();
-                    //posts.add(label);
+                    Date created = resultSet.getDate("created");
+                    Date updated = resultSet.getDate("updated");
+                    int writerId = resultSet.getInt("writer_id");
+                    //Нужно будет сделать join постов, лейблов и врайтеров и возможно post_label
+                    //Post post = new Post(id, title, content, status, created, updated, new Writer("1","2",1));
+                    //posts.add(post);
                 }
             } catch (SQLException e) {
                 throw new DatabaseException("Failed to load posts", e);
@@ -61,37 +71,44 @@ public class PostRepositoryImpl implements PostRepository {
 //        }
     }
 
-    private Long generateAutoIncrementId(List<Post> posts) {
-        return posts.stream().mapToLong(Post::getId).max().orElse(0L) + 1;
-    }
-
     @Override
     public List<Post> getAll() {
         return loadAllPosts();
     }
-
+    //todo Когда мы создаем новый пост нужно-ли заполнять post_label
     @Override
     public Post create(Post postToCreate) {
-        List<Post> currentPosts = loadAllPosts();
-        postToCreate.setId(generateAutoIncrementId(currentPosts));
-        postToCreate.setStatus(Status.ACTIVE);
-        currentPosts.add(postToCreate);
-        writeAllPosts(currentPosts);
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERT)) {
+
+            pstmt.setString(1, postToCreate.getTitle());
+            pstmt.setString(2, postToCreate.getContent());
+            pstmt.setString(3, Status.ACTIVE.name());
+            pstmt.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+            pstmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+            pstmt.setLong(6, postToCreate.getWriter().getId());
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Failed to create new post", e);
+        }
         return postToCreate;
     }
 
     @Override
     public Post update(Post postToUpdate) {
-        List<Post> currentPosts = loadAllPosts();
-        List<Post> updatedPosts = currentPosts.stream().map(existingPosts -> {
-            if (existingPosts.getId().equals(postToUpdate.getId())) {
-                postToUpdate.setLabels(existingPosts.getLabels());
-                return postToUpdate;
-            }
-            return existingPosts;
-        }).collect(Collectors.toList());
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_UPDATE)) {
 
-        writeAllPosts(updatedPosts);
+            pstmt.setString(1, postToUpdate.getTitle());
+            pstmt.setString(2, postToUpdate.getContent());
+            pstmt.setString(3, postToUpdate.getStatus().name());
+            pstmt.setLong(4, postToUpdate.getWriter().getId());
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Failed to update post", e);
+        }
         return postToUpdate;
     }
 

@@ -20,6 +20,7 @@ public class LabelRepositoryImpl implements LabelRepository {
     private static final String SQL_INSERT = "INSERT INTO labels (name, status) VALUES (?, ?)";
     private static final String SQL_UPDATE = "UPDATE labels SET name = ?, status = ? WHERE id = ?";
     private static final String SQL_SELECT_BY_ID = "SELECT * FROM labels WHERE id = ?";
+    //todo поменять на update, т.к. мы меняем статус а не удаляем запись
     private static final String SQL_DELETE = "DELETE FROM labels WHERE id = ?";
 
     private List<Label> loadAllLabels() {
