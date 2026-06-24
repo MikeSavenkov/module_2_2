@@ -1,20 +1,20 @@
 CREATE DATABASE IF NOT EXISTS blog_db;
 USE blog_db;
 
-CREATE TABLE labels (
+CREATE TABLE IF NOT EXISTS labels (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     status VARCHAR(50)
 );
 
-CREATE TABLE writers (
+CREATE TABLE IF NOT EXISTS writers (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     firstname VARCHAR(100) NOT NULL,
     lastname VARCHAR(100) NOT NULL,
     status VARCHAR(50)
 );
 
-CREATE TABLE posts (
+CREATE TABLE IF NOT EXISTS posts (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     content TEXT,
@@ -26,7 +26,7 @@ CREATE TABLE posts (
         REFERENCES writers(id) ON DELETE CASCADE
 );
 
-CREATE TABLE post_label (
+CREATE TABLE IF NOT EXISTS post_label (
     post_id BIGINT NOT NULL,
     label_id BIGINT NOT NULL,
     PRIMARY KEY (post_id, label_id),

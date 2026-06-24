@@ -20,8 +20,7 @@ public class LabelRepositoryImpl implements LabelRepository {
     private static final String SQL_INSERT = "INSERT INTO labels (name, status) VALUES (?, ?)";
     private static final String SQL_UPDATE = "UPDATE labels SET name = ?, status = ? WHERE id = ?";
     private static final String SQL_SELECT_BY_ID = "SELECT * FROM labels WHERE id = ?";
-    //todo поменять на update, т.к. мы меняем статус а не удаляем запись
-    private static final String SQL_DELETE = "DELETE FROM labels WHERE id = ?";
+    private static final String SQL_DELETE = "UPDATE labels SET status = ? WHERE id = ?";
 
     private List<Label> loadAllLabels() {
         List<Label> labels;
@@ -120,7 +119,8 @@ public class LabelRepositoryImpl implements LabelRepository {
         try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(SQL_DELETE)) {
 
-            pstmt.setLong(1, id);
+            pstmt.setString(1, Status.DELETED.name());
+            pstmt.setLong(2, id);
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
