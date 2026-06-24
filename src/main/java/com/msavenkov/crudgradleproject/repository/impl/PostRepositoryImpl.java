@@ -4,20 +4,14 @@ package com.msavenkov.crudgradleproject.repository.impl;
 import com.msavenkov.crudgradleproject.config.DatabaseConfig;
 import com.msavenkov.crudgradleproject.exception.DatabaseException;
 import com.msavenkov.crudgradleproject.exception.NotFoundException;
-import com.msavenkov.crudgradleproject.model.Label;
 import com.msavenkov.crudgradleproject.model.Post;
 import com.msavenkov.crudgradleproject.model.Status;
-import com.msavenkov.crudgradleproject.model.Writer;
 import com.msavenkov.crudgradleproject.repository.PostRepository;
 
-import java.io.*;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class PostRepositoryImpl implements PostRepository {
 
@@ -31,8 +25,7 @@ public class PostRepositoryImpl implements PostRepository {
     private static final String SQL_UPDATE =
             "UPDATE posts SET title = ?, content = ?, status = ?, writer_id = ? WHERE id = ?";
     private static final String SQL_SELECT_BY_ID = "SELECT * FROM posts WHERE id = ?";
-    //todo поменять на update, т.к. мы меняем статус а не удаляем запись
-    private static final String SQL_DELETE = "DELETE FROM posts WHERE id = ?";
+    private static final String SQL_DELETE = "UPDATE posts SET status = ? WHERE id = ?";
 
     private List<Post> loadAllPosts() {
         List<Post> posts;
@@ -61,14 +54,6 @@ public class PostRepositoryImpl implements PostRepository {
             throw new DatabaseException("Failed to connect database", e);
         }
         return posts;
-    }
-
-    private void writeAllPosts(List<Post> posts) {
-//        try (Writer writer = new FileWriter(POSTS_FILE_PATH)) {
-//            //gson.toJson(posts, writer);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     @Override
@@ -122,12 +107,15 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public void remove(Long id) {
-        List<Post> posts = getAll();
-        for (Post post : posts) {
-            if (Objects.equals(post.getId(), id)) {
-                post.setStatus(Status.DELETED);
-            }
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_DELETE)) {
+
+            pstmt.setString(1, Status.DELETED.name());
+            pstmt.setLong(2, id);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Failed remove post by id = " + id, e);
         }
-        writeAllPosts(posts);
     }
 }
